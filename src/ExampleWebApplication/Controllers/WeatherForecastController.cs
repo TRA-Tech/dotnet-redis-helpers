@@ -1,5 +1,7 @@
+using ExampleWebApplication.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using TraTech.Redis.Cache;
+using TraTech.Redis.MessageHub;
 
 namespace ExampleWebApplication.Controllers
 {
@@ -8,21 +10,23 @@ namespace ExampleWebApplication.Controllers
     public class WeatherForecastController : ControllerBase
     {
         private readonly IRedisCacheService _redisCacheService;
+        private readonly IRedisMessageHub? _redisMessageHub;
 
-        public WeatherForecastController(IRedisCacheService redisCacheService)
+        public WeatherForecastController(IRedisCacheService redisCacheService, IServiceProvider serviceProvider)
         {
             _redisCacheService = redisCacheService;
+            _redisMessageHub = (serviceProvider.GetService(typeof(RedisMessageHub)) as RedisMessageHub);
         }
 
         [HttpGet("GetValueAsync")]
         public async Task<IActionResult> Get(string key)
         {
-            var value = await _redisCacheService.GetValueAsync(key);
+            var value = await _redisCacheService.GetValueAsync<TestSetDto>(key);
             return Ok(value);
         }
 
-        [HttpGet("SetValueAsync")]
-        public async Task<IActionResult> Set(string key, string value)
+        [HttpPost("SetValueAsync")]
+        public async Task<IActionResult> Set(string key, TestSetDto value)
         {
             await _redisCacheService.SetValueAsync(key, value);
             return Ok();
@@ -53,6 +57,16 @@ namespace ExampleWebApplication.Controllers
         public IActionResult ClearAll()
         {
             _redisCacheService.ClearAll();
+            return Ok();
+        }
+
+        [HttpGet("PublishAsync")]
+        public async Task<IActionResult> PublishAsync(string key, string channelName)
+        {
+            var cacheData = await _redisCacheService.GetValueAsync<TestSetDto>(key);
+
+            await _redisMessageHub.PublishAsync(channelName, cacheData);
+
             return Ok();
         }
     }

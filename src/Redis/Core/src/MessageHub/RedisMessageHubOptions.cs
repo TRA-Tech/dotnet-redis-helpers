@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace TraTech.Redis.MessageHub
 {
@@ -7,6 +8,8 @@ namespace TraTech.Redis.MessageHub
         public IRedisMessageHandlerProvider RedisMessageHandlerProvider { get; private set; }
 
         public ConfigurationOptions RedisConfigurationOptions { get; private set; }
+
+        public JsonSerializerSettings? JsonSerializerSettings { get; private set; }
 
         public RedisMessageHubOptions()
         {
@@ -22,6 +25,11 @@ namespace TraTech.Redis.MessageHub
         public void UseConfigurationOptions(ConfigurationOptions configurationOptions)
         {
             RedisConfigurationOptions = configurationOptions;
+        }
+
+        public void UseJsonSerializerSettings(JsonSerializerSettings jsonSerializerSettings)
+        {
+            JsonSerializerSettings = jsonSerializerSettings;
         }
     }
 }

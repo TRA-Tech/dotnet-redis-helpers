@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace TraTech.Redis.MessageHub
@@ -44,6 +45,12 @@ namespace TraTech.Redis.MessageHub
             {
                 await StartListening(channelName);
             }
+        }
+
+        public async Task PublishAsync(string channelName, object message)
+        {
+            string messageSerialize = JsonConvert.SerializeObject(message, _redisMessageHubOptions.JsonSerializerSettings);
+            await _subscriber.PublishAsync(channelName, messageSerialize, CommandFlags.FireAndForget);
         }
     }
 }
