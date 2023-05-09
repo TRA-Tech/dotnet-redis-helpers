@@ -25,14 +25,20 @@ namespace TraTech.Redis.Cache
             );
         }
 
-        public async Task<string?> GetValueAsync(string key)
+        public async Task<T?> GetValueAsync<T>(string key) where T : class
         {
-            return await _cache.StringGetAsync(key);
+            RedisValue result = await _cache.StringGetAsync(key);
+
+            if (result.IsNull)
+                return null;
+
+            return JsonConvert.DeserializeObject<T>(result, _options.Value.JsonSerializerSettings);
         }
 
-        public async Task<bool> SetValueAsync(string key, string value)
+        public async Task<bool> SetValueAsync<T>(string key, T value)
         {
-            return await _cache.StringSetAsync(key, value, _options.Value.ExpireTime);
+            string data = JsonConvert.SerializeObject(value, _options.Value.JsonSerializerSettings);
+            return await _cache.StringSetAsync(key, data, _options.Value.ExpireTime);
         }
 
         public async Task<T> GetOrAddAsync<T>(string key, Func<Task<T>> action) where T : class
