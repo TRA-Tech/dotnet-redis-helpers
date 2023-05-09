@@ -9,7 +9,7 @@ namespace TraTech.Redis.MessageHub
 
         public ConfigurationOptions RedisConfigurationOptions { get; private set; }
 
-        public JsonSerializerSettings? JsonSerializerSettings { get; }
+        public JsonSerializerSettings? JsonSerializerSettings { get; private set; }
 
         public RedisMessageHubOptions()
         {
@@ -25,6 +25,11 @@ namespace TraTech.Redis.MessageHub
         public void UseConfigurationOptions(ConfigurationOptions configurationOptions)
         {
             RedisConfigurationOptions = configurationOptions;
+        }
+
+        public void UseJsonSerializerSettings(JsonSerializerSettings jsonSerializerSettings)
+        {
+            JsonSerializerSettings = jsonSerializerSettings;
         }
     }
 }
