@@ -5,7 +5,7 @@ namespace TraTech.Redis.Core.MessageHub
 {
     public static class RedisMessageHubServiceCollectionExtensions
     {
-        public static RedisMessageHubBuilder AddRedisMessageHub(this IServiceCollection services, ConfigurationOptions configurationOptions)
+        public static RedisMessageHubBuilder AddRedisMessageHub(this IServiceCollection services, ConfigurationOptions configurationOptions, ServiceLifetime serviceLifetimeOfHandlers = ServiceLifetime.Transient)
         {
             if (services == null)
             {
@@ -21,26 +21,10 @@ namespace TraTech.Redis.Core.MessageHub
 
             services.AddSingleton<RedisMessageHub>();
 
-            return new RedisMessageHubBuilder(services);
+            return new RedisMessageHubBuilder(services, serviceLifetimeOfHandlers);
         }
 
-        public static RedisMessageHubBuilder AddRedisMessageHub(this IServiceCollection services, string redisConfiguration)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            services.AddOptions();
-
-            services.Configure<RedisMessageHubOptions>(o =>
-            {
-                o.UseConfigurationOptions(ConfigurationOptions.Parse(redisConfiguration));
-            });
-
-            services.AddSingleton<RedisMessageHub>();
-
-            return new RedisMessageHubBuilder(services);
-        }
+        public static RedisMessageHubBuilder AddRedisMessageHub(this IServiceCollection services, string redisConfiguration, ServiceLifetime serviceLifetimeOfHandlers = ServiceLifetime.Transient)
+            => AddRedisMessageHub(services, ConfigurationOptions.Parse(redisConfiguration), serviceLifetimeOfHandlers);
     }
 }

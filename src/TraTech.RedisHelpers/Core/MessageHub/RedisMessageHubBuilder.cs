@@ -7,11 +7,16 @@ namespace TraTech.Redis.Core.MessageHub
 {
     public class RedisMessageHubBuilder
     {
-        public RedisMessageHubBuilder(IServiceCollection services) => Services = services;
-
+        public virtual ServiceLifetime ServiceLifetime { get; }
         public virtual IServiceCollection Services { get; }
 
-        public RedisMessageHubBuilder AddChannelMessageHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] THandler>(string channelName)
+        public RedisMessageHubBuilder(IServiceCollection services, ServiceLifetime serviceLifetime)
+        {
+            Services = services;
+            ServiceLifetime = serviceLifetime;
+        }
+
+        public RedisMessageHubBuilder AddChannelMessageHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] THandler>(string channelName, ServiceLifetime? serviceLifetime = null)
             where THandler : class, IRedisMessageHandler
         {
             Services.Configure<RedisMessageHubOptions>(o =>
@@ -19,7 +24,7 @@ namespace TraTech.Redis.Core.MessageHub
                 o.RedisMessageHandlerProvider.TryAddHandler<THandler>(channelName);
             });
 
-            Services.TryAddTransient<THandler>();
+            Services.TryAdd(new ServiceDescriptor(typeof(THandler), typeof(THandler), serviceLifetime ?? ServiceLifetime));
 
             return this;
         }

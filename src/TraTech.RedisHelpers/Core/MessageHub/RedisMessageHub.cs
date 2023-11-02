@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using TraTech.Redis.Abstractions.MessageHub;
@@ -24,10 +25,12 @@ namespace TraTech.Redis.Core.MessageHub
         {
             if (string.IsNullOrEmpty(channelName)) throw new ArgumentException("it is null or empty", nameof(channelName));
 
+            await using var asyncScope = _serviceProvider.CreateAsyncScope();
+
             Type? handlerType = await _redisMessageHubOptions.RedisMessageHandlerProvider.GetHandlerAsync(channelName);
             if (handlerType == null) throw new NullReferenceException(nameof(handlerType));
 
-            IRedisMessageHandler? service = _serviceProvider.GetService(handlerType) as IRedisMessageHandler;
+            IRedisMessageHandler? service = asyncScope.ServiceProvider.GetService(handlerType) as IRedisMessageHandler;
             if (service == null) throw new NullReferenceException(nameof(service));
 
             ChannelMessageQueue channelQueue = await _subscriber.SubscribeAsync(channelName, CommandFlags.FireAndForget);

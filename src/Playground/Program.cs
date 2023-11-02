@@ -1,4 +1,5 @@
 using Playground.RedisChannelMessageHandlers;
+using Playground.Services;
 using StackExchange.Redis;
 using TraTech.Redis.Core.Cache;
 using TraTech.Redis.Core.MessageHub;
@@ -17,6 +18,10 @@ builder.Services.AddRedisCacheService((options) =>
 
 builder.Services.AddRedisMessageHub("localhost")
     .AddChannelMessageHandler<DenemeMessageHandler>("deneme");
+
+builder.Services.AddScoped<Service1>();
+builder.Services.AddTransient<Service2>();
+
 
 var app = builder.Build();
 

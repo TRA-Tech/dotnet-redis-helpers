@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>TraTech.RedisHelpers</Title>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Authors>TraTech</Authors>
     <Company>TraTech</Company>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
