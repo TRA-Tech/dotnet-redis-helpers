@@ -2,11 +2,17 @@
 {
     public class Service2
     {
-        private readonly Service1 _service1;
+        public readonly Service1 Service1;
 
         public Service2(Service1 service1)
         {
-            _service1 = service1;
+            Service1 = service1;
+            Service1.Name = "Test";
+        }
+
+        public string GetName()
+        {
+            return Service1.Name;
         }
     }
 }
